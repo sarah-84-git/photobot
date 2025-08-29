@@ -1,9 +1,8 @@
-// 🟨 NEW — App Router route handler (no "handler" export)
+// 🟨 NEW — App Router + chat.completions
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs"; // 🟨 NEW (safer for SDK + env)
-
+export const runtime = "nodejs";
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
 const SYSTEM = `You are a warm, curious interviewer helping someone craft a short narrative about their photo.
@@ -15,34 +14,28 @@ const SYSTEM = `You are a warm, curious interviewer helping someone craft a shor
 
 export async function POST(req: Request) {
   try {
-    const { imageDataUrl, messages } = (await req.json()) as {
-      imageDataUrl: string;
-      messages: { role: "user" | "assistant"; content: string }[];
-    };
+    const { imageDataUrl, messages } = await req.json();
+    const lastUser = (messages as any[])
+      .filter(m => m.role === "user")
+      .slice(-1)[0]?.content ?? "";
 
-    const lastUser = messages.filter(m => m.role === "user").slice(-1)[0]?.content ?? "";
-    const userBlocks: any[] = [
-      { type: "input_text", text: lastUser || "Please begin by asking your first question about this photo." },
-      {
-        type: "input_image",
-        image: {
-          data: imageDataUrl,
-          mime_type: imageDataUrl.split(";")[0].replace("data:", ""),
-        },
-      },
-    ];
-
-    const response = await client.responses.create({
+    const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
-      input: [
-        { role: "system", content: [{ type: "text", text: SYSTEM }] },
-        { role: "user", content: userBlocks },
+      messages: [
+        { role: "system", content: SYSTEM },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: lastUser || "Please begin by asking your first question about this photo." },
+            { type: "image_url", image_url: { url: imageDataUrl } }, // 🟨 pass data URL
+          ] as any,
+        },
       ],
-      max_output_tokens: 200,
+      max_tokens: 200,
     });
 
     const reply =
-      (response as any).output_text ??
+      completion.choices[0]?.message?.content ??
       "Could you tell me a little about what’s happening in this photo?";
     return NextResponse.json({ reply });
   } catch (e: any) {
