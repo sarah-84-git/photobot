@@ -1,4 +1,8 @@
+// 🟨 NEW — make this a Client Component
+"use client";
+
 import React, { useRef, useState } from "react";
+
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
