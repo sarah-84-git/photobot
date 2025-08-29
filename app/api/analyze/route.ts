@@ -10,20 +10,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing prompt or image" }, { status: 400 });
     }
 
-    const response = await openai.responses.create({
+    // ✅ Use Chat Completions with vision
+    const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
-      input: [
+      messages: [
         {
           role: "user",
           content: [
-            { type: "input_text", text: prompt },
-            { type: "input_image", image_url: image }
+            { type: "text", text: prompt },
+            { type: "image_url", image_url: { url: image } } // data URL is fine
           ]
         }
-      ]
+      ],
     });
 
-    const out = (response.output_text ?? "").trim();
+    const out =
+      completion.choices?.[0]?.message?.content?.toString().trim() ?? "";
+
     return NextResponse.json({ answer: out || "(No response)" });
   } catch (err: any) {
     console.error(err);
