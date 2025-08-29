@@ -63,7 +63,12 @@ export default function PhotoConversation() {
         <button onClick={onPickFile} className="px-4 py-2 rounded-2xl shadow">Upload a photo</button>
       ) : (
         <>
-          <img src={imageDataUrl} alt="uploaded" className="w-full rounded-2xl shadow" />
+          // 🟨 CHANGED: added max-w, max-h, object-contain and centered
+<img
+  src={imageDataUrl}
+  alt="uploaded"
+  className="max-w-md max-h-96 mx-auto rounded-2xl shadow object-contain"
+/>
           <div className="space-y-3 p-3 rounded-2xl bg-gray-50">
             {messages.map((m, i) => (
               <div key={i} className={m.role === "assistant" ? "text-gray-900" : "text-gray-700"}>
