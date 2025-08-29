@@ -11,11 +11,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "plugins": [
-      { "name": "next" }
-    ],
+    "plugins": [{ "name": "next" }],
     "incremental": true,
-    "types": ["node"]
+    "types": ["node"],
+    "baseUrl": ".",                 // 🟨 NEW
+    "paths": {                      // 🟨 NEW
+      "@/*": ["./*"]               // 🟨 NEW
+    }                               // 🟨 NEW
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
