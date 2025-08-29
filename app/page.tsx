@@ -1,4 +1,6 @@
-import "./globals.css";
+// app/page.tsx
+"use client";
+
 import { useRef, useState } from "react";
 
 export default function Page() {
@@ -62,7 +64,9 @@ export default function Page() {
             <div className="label">Your question</div>
             <input ref={promptRef} className="input" placeholder="e.g. What's written on the sign?" />
           </div>
-          <button className="btn" onClick={onAsk} disabled={isLoading}> {isLoading ? "Thinking…" : "Ask"} </button>
+          <button className="btn" onClick={onAsk} disabled={isLoading}>
+            {isLoading ? "Thinking…" : "Ask"}
+          </button>
           <button className="btn" onClick={clearAll} disabled={isLoading}>Reset</button>
         </div>
 
@@ -80,7 +84,9 @@ export default function Page() {
           </>
         )}
         <hr />
-        <p className="small">Privacy: the image is sent to the serverless function for analysis. No database is used in this starter.</p>
+        <p className="small">
+          Privacy: the image is sent to the serverless function for analysis. No database is used in this starter.
+        </p>
       </div>
     </div>
   );
